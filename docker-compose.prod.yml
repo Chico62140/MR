@@ -1,0 +1,37 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:14
+    restart: always
+    environment:
+      POSTGRES_USER: mr
+      POSTGRES_PASSWORD: 1qazXSW2
+      POSTGRES_DB: request
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  backend:
+    image: chico871/mrd2c-backend:latest
+    restart: always
+    environment:
+      DATABASE_URL: postgresql+psycopg2://mr:1qazXSW2@db:5432/request
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+  frontend:
+    image: chico871/mrd2c-frontend:latest
+    restart: always
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    stdin_open: true
+    tty: true
+
+volumes:
+  pgdata:
